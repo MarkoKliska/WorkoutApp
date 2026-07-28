@@ -1,0 +1,56 @@
+## .NET / Visual Studio / Rider ##
+[Bb]in/
+[Oo]bj/
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.userprefs
+
+## Build & test results ##
+[Dd]ebug/
+[Rr]elease/
+[Ll]og/
+[Ll]ogs/
+[Tt]est[Rr]esult*/
+*.trx
+*.coverage
+*.coveragexml
+
+## NuGet ##
+*.nupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+project.lock.json
+project.fragment.lock.json
+
+## Angular / Node ##
+node_modules/
+dist/
+tmp/
+out-tsc/
+.angular/
+npm-debug.log*
+yarn-error.log*
+
+## Environment & secrets ##
+.env
+.env.*
+!.env.example
+appsettings.*.local.json
+*.pfx
+*.key
+
+## Docker local volumes ##
+docker/volumes/
+postgres-data/
+pgadmin-data/
+
+## OS ##
+.DS_Store
+Thumbs.db
+
+## Editor extras ##
+.idea/
+*.swp
