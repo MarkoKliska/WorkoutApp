@@ -1,4 +1,6 @@
-﻿namespace WorkoutApp.Domain.Common;
+﻿using WorkoutApp.Domain.Enums;
+
+namespace WorkoutApp.Domain.Common;
 
 public sealed record ValidationError : Error
 {
