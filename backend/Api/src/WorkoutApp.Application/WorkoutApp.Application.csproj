@@ -10,7 +10,6 @@
     <Folder Include="Features\Users\Queries\" />
     <Folder Include="Features\Workouts\Commands\" />
     <Folder Include="Features\Workouts\Queries\" />
-    <Folder Include="Interfaces\" />
     <Folder Include="Utils\" />
   </ItemGroup>
 
