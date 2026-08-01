@@ -6,7 +6,6 @@
 
   <ItemGroup>
     <Folder Include="DTOs\Workout\" />
-    <Folder Include="Features\Users\Queries\" />
     <Folder Include="Features\Workouts\Commands\" />
     <Folder Include="Features\Workouts\Queries\" />
     <Folder Include="Utils\" />
