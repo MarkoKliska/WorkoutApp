@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/WorkoutApp.Api/WorkoutApp.Api.csproj" />
+    <Project Path="src/WorkoutApp.Application/WorkoutApp.Application.csproj" />
+    <Project Path="src/WorkoutApp.Domain/WorkoutApp.Domain.csproj" />
+    <Project Path="src/WorkoutApp.Infrastructure/WorkoutApp.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/WorkoutApp.Api.Tests/WorkoutApp.Api.Tests.csproj" />
+    <Project Path="tests/WorkoutApp.Application.Tests/WorkoutApp.Application.Tests.csproj" />
+    <Project Path="tests/WorkoutApp.Domain.Tests/WorkoutApp.Domain.Tests.csproj" />
+    <Project Path="tests/WorkoutApp.Infrastructure.Tests/WorkoutApp.Infrastructure.Tests.csproj" />
+  </Folder>
+</Solution>
