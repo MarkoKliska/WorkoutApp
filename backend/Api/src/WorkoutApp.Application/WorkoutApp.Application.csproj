@@ -5,9 +5,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DTOs\" />
-    <Folder Include="Features\Users\Commands\Register\" />
-    <Folder Include="Features\Users\Queries\" />
+    <Folder Include="DTOs\Workout\" />
     <Folder Include="Features\Workouts\Commands\" />
     <Folder Include="Features\Workouts\Queries\" />
     <Folder Include="Utils\" />

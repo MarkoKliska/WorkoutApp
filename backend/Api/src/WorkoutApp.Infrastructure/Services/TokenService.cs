@@ -17,8 +17,8 @@ public sealed class TokenService(IOptions<JwtOptions> jwtOptions) : ITokenServic
     {
         var claims = new[]
         {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Email, user.Email.Value),
+            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new Claim(JwtRegisteredClaimNames.Email, user.Email.Value),
         };
 
         var signingCredentials = new SigningCredentials(
