@@ -27,11 +27,4 @@ public sealed class WorkoutsController(ISender sender) : ControllerBase
         var result = await sender.Send(new GetWorkoutsQuery(), cancellationToken);
         return result.ToActionResult();
     }
-
-    [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
-    {
-        var result = await sender.Send(new GetWorkoutByIdQuery(id), cancellationToken);
-        return result.ToActionResult();
-    }
 }
