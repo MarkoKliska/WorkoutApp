@@ -47,4 +47,24 @@ public sealed class User : AggregateRoot, ISoftDeletable
         IsDeleted = true;
         DeletedAt = DateTimeOffset.UtcNow;
     }
+    public Result UpdateProfile(string firstName, string lastName, string email)
+    {
+        var firstNameResult = PersonName.Create(firstName);
+        if (firstNameResult.IsFailure)
+            return Result.Failure(firstNameResult.Error);
+
+        var lastNameResult = PersonName.Create(lastName);
+        if (lastNameResult.IsFailure)
+            return Result.Failure(lastNameResult.Error);
+
+        var emailResult = Email.Create(email);
+        if (emailResult.IsFailure)
+            return Result.Failure(emailResult.Error);
+
+        FirstName = firstNameResult.Value;
+        LastName = lastNameResult.Value;
+        Email = emailResult.Value;
+
+        return Result.Success();
+    }
 }
