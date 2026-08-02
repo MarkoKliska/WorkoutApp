@@ -8,7 +8,7 @@ namespace WorkoutApp.Api.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddApiServices(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddApiServices(this IServiceCollection services, IConfiguration configuration, IHostEnvironment environment)
     {
         services.AddControllers()
             .AddJsonOptions(options => options.JsonSerializerOptions.Converters
@@ -26,26 +26,29 @@ public static class ServiceCollectionExtensions
                       .AllowAnyMethod());
         });
 
-        services.AddEndpointsApiExplorer();
-        services.AddSwaggerGen(options =>
+        if (environment.IsDevelopment())
         {
-            options.SwaggerDoc("v1", new OpenApiInfo { Title = "WorkoutApp API", Version = "v1" });
-
-            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            services.AddEndpointsApiExplorer();
+            services.AddSwaggerGen(options =>
             {
-                Description = "JWT Authorization header using the Bearer scheme. Enter 'Bearer' [space] and then your token.",
-                Name = "Authorization",
-                In = ParameterLocation.Header,
-                Type = SecuritySchemeType.Http,
-                Scheme = "bearer",
-                BearerFormat = "JWT"
-            });
+                options.SwaggerDoc("v1", new OpenApiInfo { Title = "WorkoutApp API", Version = "v1" });
 
-            options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
-            {
-                [new OpenApiSecuritySchemeReference("Bearer", document)] = []
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "JWT Authorization header using the Bearer scheme. Enter 'Bearer' [space] and then your token.",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT"
+                });
+
+                options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+                {
+                    [new OpenApiSecuritySchemeReference("Bearer", document)] = []
+                });
             });
-        });
+        }
 
         return services;
     }
