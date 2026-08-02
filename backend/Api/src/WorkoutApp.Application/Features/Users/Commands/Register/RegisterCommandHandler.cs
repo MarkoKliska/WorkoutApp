@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using WorkoutApp.Application.DTOs.User.RegisterUser;
+using WorkoutApp.Application.Features.Users.Events;
 using WorkoutApp.Application.Interfaces;
 using WorkoutApp.Domain.Common;
 using WorkoutApp.Domain.Entities;
@@ -12,8 +13,9 @@ public sealed class RegisterCommandHandler(
     IUserRepository userRepository,
     IUnitOfWork unitOfWork,
     IPasswordHasher passwordHasher,
-    ITokenService tokenService
-) 
+    ITokenService tokenService,
+    IPublisher publisher
+)
     : IRequestHandler<RegisterCommand, Result<RegisterResponse>>
 {
     public async Task<Result<RegisterResponse>> Handle(RegisterCommand command, CancellationToken cancellationToken)
@@ -37,6 +39,10 @@ public sealed class RegisterCommandHandler(
         var user = userResult.Value;
         userRepository.Add(user);
         await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await publisher.Publish(
+            new UserRegisteredEvent(user.Id, user.Email.Value, user.FirstName.Value, user.LastName.Value),
+            cancellationToken);
 
         var token = tokenService.GenerateToken(user);
 
