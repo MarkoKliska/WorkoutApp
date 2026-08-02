@@ -1,0 +1,52 @@
+<section class="page">
+  <div class="profile">
+    <form class="profile-card" [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+      <h1>Your info</h1>
+
+      <label class="profile-card__field">
+        <span>First name</span>
+        <input type="text" formControlName="firstName" />
+        @if (profileForm.controls.firstName.invalid && profileForm.controls.firstName.touched) {
+          <span class="profile-card__error">First name is required.</span>
+        }
+      </label>
+
+      <label class="profile-card__field">
+        <span>Last name</span>
+        <input type="text" formControlName="lastName" />
+        @if (profileForm.controls.lastName.invalid && profileForm.controls.lastName.touched) {
+          <span class="profile-card__error">Last name is required.</span>
+        }
+      </label>
+
+      <label class="profile-card__field">
+        <span>Email</span>
+        <input type="email" formControlName="email" />
+        @if (profileForm.controls.email.invalid && profileForm.controls.email.touched) {
+          <span class="profile-card__error">Enter a valid email.</span>
+        }
+      </label>
+
+      <button type="submit" [disabled]="isSavingProfile()">
+        {{ isSavingProfile() ? 'Saving...' : 'Save changes' }}
+      </button>
+    </form>
+
+    <form class="profile-card profile-card--danger" [formGroup]="deleteForm" (ngSubmit)="deleteAccount()">
+      <h2>Delete account</h2>
+      <p class="profile-card__warning">This permanently deletes your account. This can't be undone.</p>
+
+      <label class="profile-card__field">
+        <span>Confirm your password</span>
+        <input type="password" formControlName="password" autocomplete="current-password" />
+        @if (deleteForm.controls.password.invalid && deleteForm.controls.password.touched) {
+          <span class="profile-card__error">Password is required.</span>
+        }
+      </label>
+
+      <button type="submit" [disabled]="isDeletingAccount()">
+        {{ isDeletingAccount() ? 'Deleting...' : 'Delete account' }}
+      </button>
+    </form>
+  </div>
+</section>
