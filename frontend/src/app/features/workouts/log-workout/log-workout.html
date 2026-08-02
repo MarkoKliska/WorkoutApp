@@ -1,0 +1,66 @@
+<section class="page">
+  <form class="workout-form" [formGroup]="form" (ngSubmit)="submit()">
+    <h1>Log a workout</h1>
+
+    <label class="workout-form__field">
+      <span>Exercise type</span>
+      <select formControlName="exerciseType">
+        @for (type of exerciseTypes; track type) {
+          <option [value]="type">{{ type }}</option>
+        }
+      </select>
+    </label>
+
+    <label class="workout-form__field">
+      <span>Duration (minutes)</span>
+      <input type="number" formControlName="durationMinutes" min="1" />
+      @if (form.controls.durationMinutes.invalid && form.controls.durationMinutes.touched) {
+        <span class="workout-form__error">Enter a duration greater than 0.</span>
+      }
+    </label>
+
+    <label class="workout-form__field">
+      <span>Calories burned</span>
+      <input type="number" formControlName="caloriesBurned" min="0" />
+      @if (form.controls.caloriesBurned.invalid && form.controls.caloriesBurned.touched) {
+        <span class="workout-form__error">Calories cannot be negative.</span>
+      }
+    </label>
+
+    <label class="workout-form__field">
+      <span>Difficulty (1–10)</span>
+      <input type="number" formControlName="difficulty" min="1" max="10" />
+      @if (form.controls.difficulty.invalid && form.controls.difficulty.touched) {
+        <span class="workout-form__error">Enter a value between 1 and 10.</span>
+      }
+    </label>
+
+    <label class="workout-form__field">
+      <span>Fatigue (1–10)</span>
+      <input type="number" formControlName="fatigue" min="1" max="10" />
+      @if (form.controls.fatigue.invalid && form.controls.fatigue.touched) {
+        <span class="workout-form__error">Enter a value between 1 and 10.</span>
+      }
+    </label>
+
+    <label class="workout-form__field">
+      <span>Date &amp; time</span>
+      <input type="datetime-local" formControlName="performedAt" [max]="maxPerformedAt" />
+      @if (form.controls.performedAt.invalid && form.controls.performedAt.touched) {
+        <span class="workout-form__error">Workout date cannot be in the future.</span>
+      }
+    </label>
+
+    <label class="workout-form__field">
+      <span>Notes (optional)</span>
+      <textarea formControlName="notes" rows="3" maxlength="500"></textarea>
+      @if (form.controls.notes.invalid && form.controls.notes.touched) {
+        <span class="workout-form__error">Notes cannot exceed 500 characters.</span>
+      }
+    </label>
+
+    <button type="submit" [disabled]="isSubmitting()">
+      {{ isSubmitting() ? 'Saving...' : 'Log workout' }}
+    </button>
+  </form>
+</section>

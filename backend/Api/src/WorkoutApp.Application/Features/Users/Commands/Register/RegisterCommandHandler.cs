@@ -12,7 +12,9 @@ public sealed class RegisterCommandHandler(
     IUserRepository userRepository,
     IUnitOfWork unitOfWork,
     IPasswordHasher passwordHasher,
-    ITokenService tokenService) : IRequestHandler<RegisterCommand, Result<RegisterResponse>>
+    ITokenService tokenService
+) 
+    : IRequestHandler<RegisterCommand, Result<RegisterResponse>>
 {
     public async Task<Result<RegisterResponse>> Handle(RegisterCommand command, CancellationToken cancellationToken)
     {
