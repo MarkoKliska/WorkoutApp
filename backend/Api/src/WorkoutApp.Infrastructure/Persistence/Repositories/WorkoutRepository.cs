@@ -29,4 +29,12 @@ public class WorkoutRepository(
     }
 
     public void Add(Workout workout) => context.Workouts.Add(workout);
+
+    public async Task<IReadOnlyList<Workout>> GetByUserAsync(Guid userId, CancellationToken cancellationToken = default)
+    {
+        return await context.Workouts
+            .Where(w => w.UserId == userId)
+            .OrderByDescending(w => w.PerformedAt)
+            .ToListAsync(cancellationToken);
+    }
 }

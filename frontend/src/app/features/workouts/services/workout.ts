@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { LogWorkoutRequest } from '../../../shared/dto/requests/workouts/log-workout-request';
 import { LogWorkoutResponse } from '../../../shared/dto/responses/workouts/log-workout-response';
+import { WorkoutResponse } from '../../../shared/dto/responses/workouts/workout-response';
 
 @Service()
 export class WorkoutService {
@@ -11,5 +12,9 @@ export class WorkoutService {
 
   logWorkout(request: LogWorkoutRequest): Observable<LogWorkoutResponse> {
     return this.http.post<LogWorkoutResponse>(`${environment.apiUrl}/workouts`, request);
+  }
+
+  getWorkouts(): Observable<WorkoutResponse[]> {
+    return this.http.get<WorkoutResponse[]>(`${environment.apiUrl}/workouts`);
   }
 }
