@@ -9,7 +9,9 @@ namespace WorkoutApp.Application.Features.Users.Queries.Login;
 public sealed class LoginQueryHandler(
     IUserRepository userRepository,
     IPasswordHasher passwordHasher,
-    ITokenService tokenService) : IRequestHandler<LoginQuery, Result<LoginResponse>>
+    ITokenService tokenService
+) 
+    : IRequestHandler<LoginQuery, Result<LoginResponse>>
 {
     public async Task<Result<LoginResponse>> Handle(LoginQuery query, CancellationToken cancellationToken)
     {

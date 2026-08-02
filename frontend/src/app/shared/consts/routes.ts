@@ -4,4 +4,5 @@ export const RouteNames = {
   Dashboard: 'dashboard',
   Profile: 'profile',
   Workouts: 'workouts',
+  LogWorkout: 'workouts/log',
 } as const;

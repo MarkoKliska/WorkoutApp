@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 import { authRoutes } from './features/auth/auth.routes';
+import { workoutsRoutes } from './features/workouts/workouts.routes';
 import { RouteNames } from './shared/consts/routes';
 
 export const routes: Routes = [
@@ -15,6 +16,7 @@ export const routes: Routes = [
         path: RouteNames.Dashboard,
         loadComponent: () => import('./features/dashboard/dashboard').then((m) => m.Dashboard),
       },
+      ...workoutsRoutes,
       { path: '', pathMatch: 'full', redirectTo: RouteNames.Dashboard },
     ],
   },

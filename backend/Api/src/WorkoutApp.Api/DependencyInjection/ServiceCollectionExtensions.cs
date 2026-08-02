@@ -1,4 +1,5 @@
 ﻿using Microsoft.OpenApi;
+using System.Text.Json.Serialization;
 using WorkoutApp.Api.Middlewares;
 using WorkoutApp.Application.DependencyInjection;
 using WorkoutApp.Infrastructure.DependencyInjection;
@@ -9,7 +10,9 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddApiServices(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddControllers();
+        services.AddControllers()
+            .AddJsonOptions(options => options.JsonSerializerOptions.Converters
+            .Add(new JsonStringEnumConverter()));
         services.AddApplication();
         services.AddInfrastructure(configuration);
         services.AddExceptionHandler<GlobalExceptionHandler>();

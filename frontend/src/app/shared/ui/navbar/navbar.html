@@ -3,6 +3,7 @@
 
   @if (currentUser(); as user) {
     <div class="navbar__actions">
+      <a class="navbar__link" [routerLink]="'/' + routeNames.LogWorkout">Log workout</a>
       <span class="navbar__user">{{ user.email }}</span>
       <button class="navbar__logout" type="button" (click)="logout()">Log out</button>
     </div>
