@@ -32,6 +32,45 @@ services:
     volumes:
       - pgadmin-data:/var/lib/pgadmin
 
+  rabbitmq:
+    image: rabbitmq:4-management-alpine
+    container_name: workoutapp-rabbitmq
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    ports:
+      - "${RABBITMQ_PORT}:5672"
+      - "${RABBITMQ_MANAGEMENT_PORT}:15672"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mail-service:
+    build:
+      context: ../backend
+      dockerfile: Mail.Service/src/WorkoutApp.Mail.Service/Dockerfile
+    container_name: workoutapp-mail-service
+    restart: unless-stopped
+    environment:
+      RabbitMq__Host: rabbitmq
+      RabbitMq__VirtualHost: /
+      RabbitMq__Username: ${RABBITMQ_USER}
+      RabbitMq__Password: ${RABBITMQ_PASSWORD}
+      Brevo__Host: smtp-relay.brevo.com
+      Brevo__Port: 587
+      Brevo__Username: ${BREVO_USERNAME}
+      Brevo__ApiKey: ${BREVO_API_KEY}
+      Brevo__SenderEmail: ${BREVO_SENDER_EMAIL}
+      Brevo__SenderName: WorkoutApp
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
 volumes:
   postgres-data:
   pgadmin-data:
+  rabbitmq-data:
