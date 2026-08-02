@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using WorkoutApp.Api.Common;
 using WorkoutApp.Application.DTOs.Workout.LogWorkout;
 using WorkoutApp.Application.Features.Workouts.Commands.LogWorkout;
+using WorkoutApp.Application.Features.Workouts.Queries.GetWorkoutById;
+using WorkoutApp.Application.Features.Workouts.Queries.GetWorkouts;
 
 namespace WorkoutApp.Api.Controllers;
 
@@ -16,6 +18,20 @@ public sealed class WorkoutsController(ISender sender) : ControllerBase
     public async Task<IActionResult> Log(LogWorkoutRequest request, CancellationToken cancellationToken)
     {
         var result = await sender.Send(new LogWorkoutCommand(request), cancellationToken);
+        return result.ToActionResult();
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+    {
+        var result = await sender.Send(new GetWorkoutsQuery(), cancellationToken);
+        return result.ToActionResult();
+    }
+
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
+    {
+        var result = await sender.Send(new GetWorkoutByIdQuery(id), cancellationToken);
         return result.ToActionResult();
     }
 }
