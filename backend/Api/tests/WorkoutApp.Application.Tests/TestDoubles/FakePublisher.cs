@@ -8,8 +8,13 @@ public sealed class FakePublisher : IPublisher
 
     public IReadOnlyList<object> PublishedNotifications => _publishedNotifications;
 
+    public Exception? ThrowOnPublish { get; set; }
+
     public Task Publish(object notification, CancellationToken cancellationToken = default)
     {
+        if (ThrowOnPublish is { } exception)
+            throw exception;
+
         _publishedNotifications.Add(notification);
         return Task.CompletedTask;
     }
@@ -17,6 +22,9 @@ public sealed class FakePublisher : IPublisher
     public Task Publish<TNotification>(TNotification notification, CancellationToken cancellationToken = default)
         where TNotification : INotification
     {
+        if (ThrowOnPublish is { } exception)
+            throw exception;
+
         _publishedNotifications.Add(notification);
         return Task.CompletedTask;
     }

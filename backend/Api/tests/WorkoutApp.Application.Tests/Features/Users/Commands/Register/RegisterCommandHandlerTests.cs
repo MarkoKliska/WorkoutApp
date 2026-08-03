@@ -1,4 +1,5 @@
-﻿using WorkoutApp.Application.DTOs.User.RegisterUser;
+﻿using Microsoft.Extensions.Logging;
+using WorkoutApp.Application.DTOs.User.RegisterUser;
 using WorkoutApp.Application.Features.Users.Commands.Register;
 using WorkoutApp.Application.Features.Users.Events;
 using WorkoutApp.Application.Tests.TestDoubles;
@@ -14,9 +15,10 @@ public class RegisterCommandHandlerTests
     private readonly FakePasswordHasher _passwordHasher = new();
     private readonly FakeTokenService _tokenService = new();
     private readonly FakePublisher _publisher = new();
+    private readonly FakeLogger<RegisterCommandHandler> _logger = new();
 
     private RegisterCommandHandler CreateHandler() =>
-        new(_userRepository, _unitOfWork, _passwordHasher, _tokenService, _publisher);
+        new(_userRepository, _unitOfWork, _passwordHasher, _tokenService, _publisher, _logger);
 
     [Fact]
     public async Task Handle_WithNewEmail_CreatesUserAndReturnsSuccess()
@@ -77,5 +79,21 @@ public class RegisterCommandHandlerTests
         Assert.True(result.IsFailure);
         Assert.Equal("User.LookupFailed", result.Error.Code);
         Assert.Empty(_userRepository.Users);
+    }
+
+    [Fact]
+    public async Task Handle_WhenPublishingEventFails_StillCreatesUserAndLogsError()
+    {
+        _publisher.ThrowOnPublish = new InvalidOperationException("Message bus unavailable.");
+        var command = new RegisterCommand(new RegisterRequest("John", "Doe", "john.doe@example.com", "Password1"));
+
+        var result = await CreateHandler().Handle(command, CancellationToken.None);
+
+        Assert.True(result.IsSuccess);
+        Assert.Single(_userRepository.Users);
+        Assert.Equal(1, _unitOfWork.SaveChangesCallCount);
+        var logEntry = Assert.Single(_logger.LogEntries);
+        Assert.Equal(LogLevel.Error, logEntry.Level);
+        Assert.IsType<InvalidOperationException>(logEntry.Exception);
     }
 }
