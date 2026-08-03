@@ -1,0 +1,59 @@
+name: Deploy to VM
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore backend
+        run: dotnet restore backend/Api/WorkoutApp.slnx
+
+      - name: Build backend
+        run: dotnet build backend/Api/WorkoutApp.slnx --no-restore --configuration Release
+
+      - name: Test backend
+        run: dotnet test backend/Api/WorkoutApp.slnx --no-build --configuration Release
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        run: npm ci
+        working-directory: frontend
+
+      - name: Build frontend
+        run: npm run build
+        working-directory: frontend
+
+      - name: Build Docker images
+        run: docker compose -f docker/docker-compose.yml build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USER }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          script: |
+            cd ~/WorkoutApp
+            git pull
+            cd docker
+            docker compose up -d --build
+            docker compose restart frontend
