@@ -42,6 +42,13 @@ public sealed class Workout : AggregateRoot, ISoftDeletable
         Guid userId, ExerciseType exerciseType, int durationMinutes, int caloriesBurned,
         int difficulty, int fatigue, string? notes, DateTime performedAt)
     {
+        performedAt = performedAt.Kind switch
+        {
+            DateTimeKind.Utc => performedAt,
+            DateTimeKind.Local => performedAt.ToUniversalTime(),
+            _ => DateTime.SpecifyKind(performedAt, DateTimeKind.Utc)
+        };
+
         if (durationMinutes <= 0)
             return Result.Failure<Workout>(Error.Validation("Workout.InvalidDuration", "Duration must be greater than zero."));
 

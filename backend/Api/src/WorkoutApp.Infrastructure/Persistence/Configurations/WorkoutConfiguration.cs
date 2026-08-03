@@ -23,6 +23,11 @@ public class WorkoutConfiguration : IEntityTypeConfiguration<Workout>
 
         builder.Property(w => w.Notes).HasMaxLength(500);
 
+        builder.HasOne<User>()
+            .WithMany()
+            .HasForeignKey(w => w.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasIndex(w => new { w.UserId, w.PerformedAt });
     }
 }
