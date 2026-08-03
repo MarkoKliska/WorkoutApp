@@ -1,0 +1,33 @@
+<section class="page">
+  <div class="dashboard">
+    <header class="dashboard__header">
+      <h1>Your progress</h1>
+      <input type="month" class="dashboard__month-picker" [value]="monthInputValue()" (change)="onMonthChange($event)" />
+    </header>
+
+    <div class="dashboard__actions">
+      <a class="dashboard__link" [routerLink]="['/', routeNames.Workouts]">View all workouts</a>
+      <a class="dashboard__link" [routerLink]="'/' + routeNames.LogWorkout">Log workout</a>
+    </div>
+
+    @if (progress(); as p) {
+      @for (week of p.weeks; track week.weekStart) {
+        <div class="week-card">
+          <div class="week-card__header">
+            <span>{{ week.weekStart | date: 'MMM d' }} &ndash; {{ week.weekEnd | date: 'MMM d' }}</span>
+            <span>{{ week.workoutCount }} workout{{ week.workoutCount === 1 ? '' : 's' }}</span>
+          </div>
+          @if (week.workoutCount > 0) {
+            <div class="week-card__stats">
+              <span>{{ week.totalDurationMinutes }} min total</span>
+              <span>Avg difficulty {{ week.averageDifficulty | number: '1.0-2' }}/10</span>
+              <span>Avg fatigue {{ week.averageFatigue | number: '1.0-2' }}/10</span>
+            </div>
+          } @else {
+            <p class="week-card__empty">No workouts this week</p>
+          }
+        </div>
+      }
+    }
+  </div>
+</section>

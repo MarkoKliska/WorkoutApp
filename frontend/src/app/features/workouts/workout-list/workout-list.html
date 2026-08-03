@@ -1,0 +1,30 @@
+<section class="page">
+  <div class="workout-list">
+    <header class="workout-list__header">
+      <h1>Your workouts</h1>
+      <a class="workout-list__cta" [routerLink]="'/' + routeNames.LogWorkout">Log workout</a>
+    </header>
+
+    @if (isLoaded() && workouts().length === 0) {
+      <p class="workout-list__empty">No workouts logged yet.</p>
+    }
+
+    @for (workout of workouts(); track workout.id) {
+      <div class="workout-card">
+        <div class="workout-card__main">
+          <span class="workout-card__type">{{ workout.exerciseType }}</span>
+          <span class="workout-card__date">{{ workout.performedAt | date: 'medium' }}</span>
+        </div>
+        <div class="workout-card__stats">
+          <span>{{ workout.durationMinutes }} min</span>
+          <span>{{ workout.caloriesBurned }} kcal</span>
+          <span>Difficulty {{ workout.difficulty }}/10</span>
+          <span>Fatigue {{ workout.fatigue }}/10</span>
+        </div>
+        @if (workout.notes) {
+          <p class="workout-card__notes">{{ workout.notes }}</p>
+        }
+      </div>
+    }
+  </div>
+</section>

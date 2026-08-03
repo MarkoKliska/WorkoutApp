@@ -1,0 +1,17 @@
+<nav class="navbar">
+  <div class="navbar__brand-group">
+    <a class="navbar__brand" [routerLink]="['/', routeNames.Dashboard]">WorkoutApp</a>
+    @if (currentUser(); as user) {
+      <span class="navbar__user">{{ user.email }}</span>
+    }
+  </div>
+
+  @if (currentUser(); as user) {
+    <div class="navbar__actions">
+      <a class="navbar__link" [routerLink]="['/', routeNames.Profile]">Profile</a>
+      <a class="navbar__link" [routerLink]="['/', routeNames.Workouts]">My workouts</a>
+      <a class="navbar__link" [routerLink]="'/' + routeNames.LogWorkout">Log workout</a>
+      <button class="navbar__logout" type="button" (click)="logout()">Log out</button>
+    </div>
+  }
+</nav>

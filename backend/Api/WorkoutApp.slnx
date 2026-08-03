@@ -1,0 +1,22 @@
+<Solution>
+  <Folder Name="/Api/" />
+  <Folder Name="/Api/src/">
+    <Project Path="src/WorkoutApp.Api/WorkoutApp.Api.csproj" />
+    <Project Path="src/WorkoutApp.Application/WorkoutApp.Application.csproj" />
+    <Project Path="src/WorkoutApp.Domain/WorkoutApp.Domain.csproj" />
+    <Project Path="src/WorkoutApp.Infrastructure/WorkoutApp.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/Api/tests/">
+    <Project Path="tests/WorkoutApp.Api.Tests/WorkoutApp.Api.Tests.csproj" />
+    <Project Path="tests/WorkoutApp.Application.Tests/WorkoutApp.Application.Tests.csproj" />
+    <Project Path="tests/WorkoutApp.Domain.Tests/WorkoutApp.Domain.Tests.csproj" />
+    <Project Path="tests/WorkoutApp.Infrastructure.Tests/WorkoutApp.Infrastructure.Tests.csproj" />
+  </Folder>
+  <Folder Name="/Contracts/">
+    <Project Path="../WorkoutApp.Contracts/WorkoutApp.Contracts.csproj" />
+  </Folder>
+  <Folder Name="/Mail.Service/" />
+  <Folder Name="/Mail.Service/src/">
+    <Project Path="../Mail.Service/src/WorkoutApp.Mail.Service/WorkoutApp.Mail.Service.csproj" />
+  </Folder>
+</Solution>
