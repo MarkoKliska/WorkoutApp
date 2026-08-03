@@ -1,0 +1,25 @@
+:root {
+  --palette-slate: #a6aebf;
+  --palette-blue: #c5d3e8;
+  --palette-green: #d0e8c5;
+  --palette-cream: #fff8de;
+  --palette-rose: #e8c5d0;
+  --color-background: var(--palette-cream);
+  --color-primary: var(--palette-blue);
+  --color-success: var(--palette-green);
+  --color-error: var(--palette-rose);
+  --color-border: var(--palette-slate);
+  --color-muted: var(--palette-slate);
+  --color-text: #2f3542;
+  --color-text-muted: #6b7280;
+  --color-primary-strong: #3b6ea5;
+  --color-on-primary-strong: #ffffff;
+  --font-family-base: 'Libertinus Math', system-ui, sans-serif;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-family-base);
+  background-color: var(--color-background);
+  color: var(--color-text);
+}/*# sourceMappingURL=styles.css.map */
