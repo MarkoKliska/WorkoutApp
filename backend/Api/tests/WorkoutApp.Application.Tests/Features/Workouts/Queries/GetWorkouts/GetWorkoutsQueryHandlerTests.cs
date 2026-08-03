@@ -8,15 +8,18 @@ namespace WorkoutApp.Application.Tests.Features.Workouts.Queries.GetWorkouts;
 public class GetWorkoutsQueryHandlerTests
 {
     private readonly FakeWorkoutRepository _workoutRepository = new();
+    private readonly FakeUserRepository _userRepository = new();
     private readonly FakeCurrentUserService _currentUserService = new();
-    private readonly Guid _userId = Guid.NewGuid();
 
-    public GetWorkoutsQueryHandlerTests()
+    private GetWorkoutsQueryHandler CreateHandler() => new(_workoutRepository, _userRepository, _currentUserService);
+
+    private Guid SeedUser()
     {
-        _currentUserService.UserId = _userId;
+        var user = User.Register("John", "Doe", "john.doe@example.com", "hashed").Value;
+        _userRepository.Seed(user);
+        _currentUserService.UserId = user.Id;
+        return user.Id;
     }
-
-    private GetWorkoutsQueryHandler CreateHandler() => new(_workoutRepository, _currentUserService);
 
     [Fact]
     public async Task Handle_WhenNotAuthenticated_ReturnsUnauthorized()
@@ -30,8 +33,21 @@ public class GetWorkoutsQueryHandlerTests
     }
 
     [Fact]
+    public async Task Handle_WhenUserNotFound_ReturnsFailure()
+    {
+        _currentUserService.UserId = Guid.NewGuid();
+
+        var result = await CreateHandler().Handle(new GetWorkoutsQuery(), CancellationToken.None);
+
+        Assert.True(result.IsFailure);
+        Assert.Equal("User.NotFound", result.Error.Code);
+    }
+
+    [Fact]
     public async Task Handle_WithNoWorkouts_ReturnsEmptyList()
     {
+        SeedUser();
+
         var result = await CreateHandler().Handle(new GetWorkoutsQuery(), CancellationToken.None);
 
         Assert.True(result.IsSuccess);
@@ -41,8 +57,9 @@ public class GetWorkoutsQueryHandlerTests
     [Fact]
     public async Task Handle_ReturnsOnlyCurrentUsersWorkoutsMappedToResponse()
     {
+        var userId = SeedUser();
         var performedAt = DateTime.UtcNow.AddDays(-2);
-        var ownWorkout = Workout.Log(_userId, ExerciseType.Strength, 40, 300, 7, 6, "Leg day.", performedAt).Value;
+        var ownWorkout = Workout.Log(userId, ExerciseType.Strength, 40, 300, 7, 6, "Leg day.", performedAt).Value;
         var otherUsersWorkout = Workout.Log(Guid.NewGuid(), ExerciseType.Cardio, 20, 150, 3, 2, null, performedAt).Value;
         _workoutRepository.Seed(ownWorkout);
         _workoutRepository.Seed(otherUsersWorkout);
