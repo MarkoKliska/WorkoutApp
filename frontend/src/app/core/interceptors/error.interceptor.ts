@@ -2,17 +2,17 @@ import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
-import { TokenStorage } from '../services/token-storage';
+import { AuthService } from '../services/auth';
 import { RouteNames } from '../../shared/consts/routes';
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
-  const tokenStorage = inject(TokenStorage);
+  const authService = inject(AuthService);
   const router = inject(Router);
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
       if (error.status === 401 && req.headers.has('Authorization')) {
-        tokenStorage.clearToken();
+        authService.logout();
         router.navigate(['/', RouteNames.Login]);
       }
 
