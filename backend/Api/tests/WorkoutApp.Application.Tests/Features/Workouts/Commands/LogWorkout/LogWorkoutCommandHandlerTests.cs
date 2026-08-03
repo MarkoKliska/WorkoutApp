@@ -1,6 +1,7 @@
 ﻿using WorkoutApp.Application.DTOs.Workout.LogWorkout;
 using WorkoutApp.Application.Features.Workouts.Commands.LogWorkout;
 using WorkoutApp.Application.Tests.TestDoubles;
+using WorkoutApp.Domain.Entities;
 using WorkoutApp.Domain.Enums;
 
 namespace WorkoutApp.Application.Tests.Features.Workouts.Commands.LogWorkout;
@@ -8,14 +9,23 @@ namespace WorkoutApp.Application.Tests.Features.Workouts.Commands.LogWorkout;
 public class LogWorkoutCommandHandlerTests
 {
     private readonly FakeWorkoutRepository _workoutRepository = new();
+    private readonly FakeUserRepository _userRepository = new();
     private readonly FakeUnitOfWork _unitOfWork = new();
     private readonly FakeCurrentUserService _currentUserService = new();
 
     private LogWorkoutCommandHandler CreateHandler() =>
-        new(_workoutRepository, _unitOfWork, _currentUserService);
+        new(_workoutRepository, _userRepository, _unitOfWork, _currentUserService);
 
     private static LogWorkoutRequest ValidRequest() => new(
         ExerciseType.Cardio, 30, 200, 5, 5, "Felt good.", DateTime.UtcNow.AddDays(-1));
+
+    private Guid SeedUser()
+    {
+        var user = User.Register("John", "Doe", "john.doe@example.com", "hashed").Value;
+        _userRepository.Seed(user);
+        _currentUserService.UserId = user.Id;
+        return user.Id;
+    }
 
     [Fact]
     public async Task Handle_WhenNotAuthenticated_ReturnsUnauthorized()
@@ -31,10 +41,23 @@ public class LogWorkoutCommandHandlerTests
     }
 
     [Fact]
+    public async Task Handle_WhenUserNotFound_ReturnsFailureAndDoesNotPersist()
+    {
+        _currentUserService.UserId = Guid.NewGuid();
+        var command = new LogWorkoutCommand(ValidRequest());
+
+        var result = await CreateHandler().Handle(command, CancellationToken.None);
+
+        Assert.True(result.IsFailure);
+        Assert.Equal("User.NotFound", result.Error.Code);
+        Assert.Empty(_workoutRepository.Workouts);
+        Assert.Equal(0, _unitOfWork.SaveChangesCallCount);
+    }
+
+    [Fact]
     public async Task Handle_WithValidRequest_CreatesWorkoutAndReturnsSuccess()
     {
-        var userId = Guid.NewGuid();
-        _currentUserService.UserId = userId;
+        var userId = SeedUser();
         var command = new LogWorkoutCommand(ValidRequest());
 
         var result = await CreateHandler().Handle(command, CancellationToken.None);
@@ -50,7 +73,7 @@ public class LogWorkoutCommandHandlerTests
     [Fact]
     public async Task Handle_WithNonPositiveDuration_ReturnsFailureAndDoesNotPersist()
     {
-        _currentUserService.UserId = Guid.NewGuid();
+        SeedUser();
         var command = new LogWorkoutCommand(ValidRequest() with { DurationMinutes = 0 });
 
         var result = await CreateHandler().Handle(command, CancellationToken.None);
@@ -64,7 +87,7 @@ public class LogWorkoutCommandHandlerTests
     [Fact]
     public async Task Handle_WithDifficultyOutOfRange_ReturnsFailureAndDoesNotPersist()
     {
-        _currentUserService.UserId = Guid.NewGuid();
+        SeedUser();
         var command = new LogWorkoutCommand(ValidRequest() with { Difficulty = 0 });
 
         var result = await CreateHandler().Handle(command, CancellationToken.None);

@@ -8,16 +8,20 @@ namespace WorkoutApp.Application.Tests.Features.Workouts.Queries.GetMonthlyProgr
 public class GetMonthlyProgressQueryHandlerTests
 {
     private readonly FakeWorkoutRepository _workoutRepository = new();
+    private readonly FakeUserRepository _userRepository = new();
     private readonly FakeCurrentUserService _currentUserService = new();
-    private readonly Guid _userId = Guid.NewGuid();
+    private readonly Guid _userId;
 
     public GetMonthlyProgressQueryHandlerTests()
     {
+        var user = User.Register("John", "Doe", "john.doe@example.com", "hashed").Value;
+        _userRepository.Seed(user);
+        _userId = user.Id;
         _currentUserService.UserId = _userId;
     }
 
     private GetMonthlyProgressQueryHandler CreateHandler() =>
-        new(_workoutRepository, _currentUserService);
+        new(_workoutRepository, _userRepository, _currentUserService);
 
     private void SeedWorkout(DateTime performedAt, int duration = 30, int difficulty = 5, int fatigue = 5, Guid? userId = null)
     {
@@ -35,6 +39,17 @@ public class GetMonthlyProgressQueryHandlerTests
 
         Assert.True(result.IsFailure);
         Assert.Equal("Workout.Unauthorized", result.Error.Code);
+    }
+
+    [Fact]
+    public async Task Handle_WhenUserNotFound_ReturnsFailure()
+    {
+        _currentUserService.UserId = Guid.NewGuid();
+
+        var result = await CreateHandler().Handle(new GetMonthlyProgressQuery(2020, 1), CancellationToken.None);
+
+        Assert.True(result.IsFailure);
+        Assert.Equal("User.NotFound", result.Error.Code);
     }
 
     [Fact]
