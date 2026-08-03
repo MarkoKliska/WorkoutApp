@@ -19,10 +19,12 @@ public sealed class Email : ValueObject
         if (string.IsNullOrWhiteSpace(value))
             return Result.Failure<Email>(Error.Validation("Email.Empty", "Email is required."));
 
-        if (!Pattern.IsMatch(value))
+        var trimmedValue = value.Trim();
+
+        if (!Pattern.IsMatch(trimmedValue))
             return Result.Failure<Email>(Error.Validation("Email.InvalidFormat", "Email format is invalid."));
 
-        return Result.Success(new Email(value.Trim().ToLowerInvariant()));
+        return Result.Success(new Email(trimmedValue.ToLowerInvariant()));
     }
 
     protected override IEnumerable<object?> GetEqualityComponents()

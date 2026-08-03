@@ -8,8 +8,9 @@ namespace WorkoutApp.Application.Features.Workouts.Queries.GetWorkouts;
 
 public sealed class GetWorkoutsQueryHandler(
     IWorkoutRepository workoutRepository,
+    IUserRepository userRepository,
     ICurrentUserService currentUserService
-) 
+)
     : IRequestHandler<GetWorkoutsQuery, Result<IReadOnlyList<WorkoutResponse>>>
 {
     public async Task<Result<IReadOnlyList<WorkoutResponse>>> Handle(GetWorkoutsQuery query, CancellationToken cancellationToken)
@@ -17,6 +18,10 @@ public sealed class GetWorkoutsQueryHandler(
         if (currentUserService.UserId is not { } userId)
             return Result.Failure<IReadOnlyList<WorkoutResponse>>(
                 Error.Unauthorized("Workout.Unauthorized", "You must be logged in to view workouts."));
+
+        var userResult = await userRepository.GetByIdAsync(userId, cancellationToken);
+        if (userResult.IsFailure)
+            return Result.Failure<IReadOnlyList<WorkoutResponse>>(userResult.Error);
 
         var workouts = await workoutRepository.GetByUserAsync(userId, cancellationToken);
 

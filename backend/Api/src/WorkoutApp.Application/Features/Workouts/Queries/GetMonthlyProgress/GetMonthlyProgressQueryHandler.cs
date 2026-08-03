@@ -8,6 +8,7 @@ namespace WorkoutApp.Application.Features.Workouts.Queries.GetMonthlyProgress;
 
 public sealed class GetMonthlyProgressQueryHandler(
     IWorkoutRepository workoutRepository,
+    IUserRepository userRepository,
     ICurrentUserService currentUserService) : IRequestHandler<GetMonthlyProgressQuery, Result<MonthlyProgressResponse>>
 {
     public async Task<Result<MonthlyProgressResponse>> Handle(GetMonthlyProgressQuery query, CancellationToken cancellationToken)
@@ -15,6 +16,10 @@ public sealed class GetMonthlyProgressQueryHandler(
         if (currentUserService.UserId is not { } userId)
             return Result.Failure<MonthlyProgressResponse>(
                 Error.Unauthorized("Workout.Unauthorized", "You must be logged in to view progress."));
+
+        var userResult = await userRepository.GetByIdAsync(userId, cancellationToken);
+        if (userResult.IsFailure)
+            return Result.Failure<MonthlyProgressResponse>(userResult.Error);
 
         var monthStart = new DateTime(query.Year, query.Month, 1, 0, 0, 0, DateTimeKind.Utc);
         var monthEnd = monthStart.AddMonths(1).AddTicks(-1);

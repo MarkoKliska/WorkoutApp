@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Logging;
 using WorkoutApp.Application.DTOs.User.RegisterUser;
 using WorkoutApp.Application.Features.Users.Events;
 using WorkoutApp.Application.Interfaces;
@@ -14,7 +15,8 @@ public sealed class RegisterCommandHandler(
     IUnitOfWork unitOfWork,
     IPasswordHasher passwordHasher,
     ITokenService tokenService,
-    IPublisher publisher
+    IPublisher publisher,
+    ILogger<RegisterCommandHandler> logger
 )
     : IRequestHandler<RegisterCommand, Result<RegisterResponse>>
 {
@@ -40,9 +42,18 @@ public sealed class RegisterCommandHandler(
         userRepository.Add(user);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
-        await publisher.Publish(
-            new UserRegisteredEvent(user.Id, user.Email.Value, user.FirstName.Value, user.LastName.Value),
-            cancellationToken);
+        try
+        {
+            await publisher.Publish(
+                new UserRegisteredEvent(user.Id, user.Email.Value, user.FirstName.Value, user.LastName.Value),
+                cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex,
+                "Failed to publish UserRegisteredEvent for user {UserId}. The account was created but the welcome email will not be sent.",
+                user.Id);
+        }
 
         var token = tokenService.GenerateToken(user);
 

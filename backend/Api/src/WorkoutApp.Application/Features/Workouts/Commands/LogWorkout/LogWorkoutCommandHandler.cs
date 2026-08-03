@@ -9,9 +9,10 @@ namespace WorkoutApp.Application.Features.Workouts.Commands.LogWorkout;
 
 public sealed class LogWorkoutCommandHandler(
     IWorkoutRepository workoutRepository,
+    IUserRepository userRepository,
     IUnitOfWork unitOfWork,
     ICurrentUserService currentUserService
-) 
+)
     : IRequestHandler<LogWorkoutCommand, Result<LogWorkoutResponse>>
 {
     public async Task<Result<LogWorkoutResponse>> Handle(LogWorkoutCommand command, CancellationToken cancellationToken)
@@ -19,6 +20,10 @@ public sealed class LogWorkoutCommandHandler(
         if (currentUserService.UserId is not { } userId)
             return Result.Failure<LogWorkoutResponse>(
                 Error.Unauthorized("Workout.Unauthorized", "You must be logged in to log a workout."));
+
+        var userResult = await userRepository.GetByIdAsync(userId, cancellationToken);
+        if (userResult.IsFailure)
+            return Result.Failure<LogWorkoutResponse>(userResult.Error);
 
         var request = command.Request;
 

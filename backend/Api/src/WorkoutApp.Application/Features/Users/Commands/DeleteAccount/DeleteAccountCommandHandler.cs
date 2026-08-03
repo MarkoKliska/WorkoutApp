@@ -7,9 +7,12 @@ namespace WorkoutApp.Application.Features.Users.Commands.DeleteAccount;
 
 public sealed class DeleteAccountCommandHandler(
     IUserRepository userRepository,
+    IWorkoutRepository workoutRepository,
     IUnitOfWork unitOfWork,
     IPasswordHasher passwordHasher,
-    ICurrentUserService currentUserService) : IRequestHandler<DeleteAccountCommand, Result>
+    ICurrentUserService currentUserService
+) 
+    : IRequestHandler<DeleteAccountCommand, Result>
 {
     public async Task<Result> Handle(DeleteAccountCommand command, CancellationToken cancellationToken)
     {
@@ -24,6 +27,10 @@ public sealed class DeleteAccountCommandHandler(
 
         if (!passwordHasher.Verify(command.Request.Password, user.PasswordHash))
             return Result.Failure(Error.Unauthorized("User.InvalidPassword", "The password you entered is incorrect."));
+
+        var workouts = await workoutRepository.GetByUserAsync(userId, cancellationToken);
+        foreach (var workout in workouts)
+            workout.Delete();
 
         user.Delete();
         await unitOfWork.SaveChangesAsync(cancellationToken);
